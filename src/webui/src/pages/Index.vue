@@ -119,37 +119,36 @@
           separator
         >
           <template v-slot="{ item, index }">
+            <q-expansion-item :key="index" dense>
+                <template v-slot:header>
+                  <q-item-section avatar v-if="false">
+                    <q-avatar><img alt="creature picture" src="https://2e.aonprd.com/Images/Monsters/Ammut.png"></q-avatar>
+                  </q-item-section>
 
-            <q-item :key="index" dense>
-              <q-item-section avatar v-if="false">
-                <q-avatar><img alt="creature picture" src="https://2e.aonprd.com/Images/Monsters/Ammut.png"></q-avatar>
-              </q-item-section>
+                  <!-- Creature name -->
+                  <q-item-section class="col">
+                    <q-item-label>{{ item.name }}</q-item-label>
+                  </q-item-section>
+                  <!-- Number of creature, button? -->
+                  <q-item-section class = "col" side>
+                      <q-item-label> status numero </q-item-label>
+                  </q-item-section>
+                </template>
+                <q-card>
+                    <q-card-section>
+                        <!-- Buttons for weak and strong enemies -->
+                        <q-btn-group>
+                            <q-btn label="Weak" size="15px" :color="item.variant === 1 ? 'orange' : 'grey-4'"  padding="xs"
+                                   @click="makeWeak(item, index)"/>
+                            <q-btn label="Base" size="15px" :color="item.variant === 0 ? 'primary' : 'grey-4'"  padding="xs"
+                                   @click="makeBase(item, index)"/>
+                            <q-btn label="Elite" size="15px" :color="item.variant === 2 ? 'deep-orange' : 'grey-4'"  padding="xs"
+                                   @click="makeElite(item, index)"/>
+                        </q-btn-group>
+                    </q-card-section>
+                </q-card>
+            </q-expansion-item>
 
-              <q-item-section class="col-3">
-                <q-item-label>{{ item.name }}</q-item-label>
-              </q-item-section>
-
-              <q-item-section side class="col q-pa-sm">
-                <div class="row q-gutter-md justify-around">
-                  <q-btn-group class="column">
-                    <q-btn size="xs" icon="add" @click="counter(item, 'weak', true)"/>
-                    <q-btn size="md" :label="item.weak" color="amber"/>
-                    <q-btn size="xs" icon="remove" @click="counter(item, 'weak', false)"/>
-                  </q-btn-group>
-                  <q-btn-group class="column">
-                    <q-btn size="xs" icon="add" @click="counter(item, 'base', true)"/>
-                    <q-btn size="md" :label="item.base" color="blue"/>
-                    <q-btn size="xs" icon="remove" @click="counter(item, 'base', false)"/>
-                  </q-btn-group>
-                  <q-btn-group class="column">
-                    <q-btn size="xs" icon="add" @click="counter(item, 'elite', true)"/>
-                    <q-btn size="md" :label="item.elite" color="red"/>
-                    <q-btn size="xs" icon="remove" @click="counter(item, 'elite', false)"/>
-                  </q-btn-group>
-                </div>
-
-              </q-item-section>
-            </q-item>
           </template>
         </q-virtual-scroll>
       </div>
