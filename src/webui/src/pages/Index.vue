@@ -21,7 +21,8 @@
         :style="selectsStyle"
         hide-selected
         clearable
-      />
+      >
+      </q-select>
       <q-select
         filled
         dense
@@ -99,8 +100,8 @@
 
     <div class="column" style="padding-top: 10px; padding-bottom: 10px">
       <q-linear-progress stripe rounded size="15px" :value="xpPool" color="primary">
-        <div class="absolute-full row justify-between items-start">
-          <q-badge color="light-green" text-color="black" :label="'Trivial ' + xpBudget[1]"/>
+        <div class="absolute-full row justify-around items-start">
+          <q-badge color="light-green" text-color="black" :label="'Trivial ' + xpBudget[0]"/>
           <q-badge color="lime" text-color="black" :label="'Low ' + xpBudget[1]"/>
           <q-badge color="amber" text-color="black" :label="'Moderate ' + xpBudget[2]"/>
           <q-badge color="orange" text-color="black" :label="'Severe ' + xpBudget[3]"/>
@@ -110,7 +111,7 @@
     </div>
 
     <div class="row">
-      <creaturesTable class="col-7" :data="filteredResults" @add-row="addToEncounter($event)"/>
+      <creaturesTable class="col-8" :data="filteredResults" @add-row="addToEncounter($event)"/>
 
       <div class="col">
         <q-virtual-scroll
@@ -256,19 +257,19 @@ export default {
         let xpCostWeak = 0
         let xpCostElite = 0
 
-        if (el.base > 0) {
+        if (el.variant === 0) {
           xpCostBase = computeDelta(Number(el.level) - Number(this.partyLevel))
         }
 
-        if (el.weak > 0) {
+        if (el.variant === 1) {
           xpCostWeak = computeDelta(Number(el.level) - 1 - Number(this.partyLevel))
         }
 
-        if (el.elite > 0) {
+        if (el.variant === 2) {
           xpCostElite = computeDelta(Number(el.level) + 1 - Number(this.partyLevel))
         }
 
-        cost += xpCostBase * el.base + xpCostWeak * el.weak + xpCostElite * el.elite
+        cost += xpCostBase + xpCostWeak + xpCostElite
       })
       return cost
     },
@@ -283,41 +284,31 @@ export default {
     },
 
     xpPool() {
-      let extreme = 160 + 40 * Number(this.partySize - 4)
-      return Number(this.xpCost) / extreme
+      return Number(this.xpCost) / this.xpBudget[4]
     },
   }
   ,
 
   methods: {
-    addToEncounter(creature) {
-      let index = this.encounter.findIndex(c => c.id === creature.id)
-      if (index !== -1) {
-        this.counter(creature, 'base', true)
-        return
-      }
-      creature.base = 1
-      creature.weak = 0
-      creature.elite = 0
+    addToEncounter(creature, remove) {
+      creature.variant = 0
       this.encounter.push(creature)
-    }
-    ,
-
-    counter(creature, power, add) {
-      let index = this.encounter.findIndex(c => c.id === creature.id)
-      if (creature[power] === 0 && !add) {
-        creature[power] = 0
-      } else {
-        add ? creature[power] += 1 : creature[power] -= 1
-      }
-
-      if (creature.weak === 0 && creature.base === 0 && creature.elite === 0) {
-        this.encounter.splice(index, 1)
-        return
-      }
-      this.$set(this.encounter, index, creature)
-    }
-    ,
+    },
+    removeFromEncounter(index) {
+      this.encounter.splice(index, 1)
+    },
+    makeBase(c, index) {
+      c.variant = 0
+      this.$set(this.encounter, index, c)
+    },
+    makeWeak(c, index) {
+      c.variant = 1
+      this.$set(this.encounter, index, c)
+    },
+    makeElite(c, index) {
+      c.variant = 2
+      this.$set(this.encounter, index, c)
+    },
   }
   ,
 
